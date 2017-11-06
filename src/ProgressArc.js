@@ -2,10 +2,39 @@ import React, { Component } from 'react';
 import * as d3 from "d3";
 
 class ProgressArc extends Component {
+
+	displayName: 'ProgressArc'; 
+
+  propTypes: {
+    id: PropTypes.string,
+    height: PropTypes.number,
+    width: PropTypes.number,
+    innerRadius: PropTypes.number,
+    outerRadius: PropTypes.number,
+    backgroundColor: PropTypes.string,
+    foregroundColor: PropTypes.string,
+    percentComplete: PropTypes.number
+  }
+
   componentDidMount() {
+	  this.drawArc();
+	}
+
+	  componentDidUpdate() {
+    this.redrawArc();
+  }
+
+ redrawArc() {
+    const context = d3.select(`#${this.props.id}`);
+    context.remove();
+    this.drawArc();
+  }
+
+  drawArc() {
     const context = this.setContext();
     this.setBackground(context);
     this.setForeground(context);
+    this.updatePercent(context);
   }
 
   setBackground(context) {
@@ -31,14 +60,27 @@ class ProgressArc extends Component {
       .append('g')
       .attr('transform', `translate(150, 150)`);
   }
-
-  setForeground(context) {
-  return context.append('path')
-    .datum({ endAngle: this.tau * 0.3 })
-    .style('fill', '#00ff00')
+arcTween(transition, newAngle, arc) {
+  transition.attrTween('d', (d) => {
+   const interpolate = d3.interpolate(d.endAngle, newAngle);
+   const newArc = d;
+   return (t) => {
+     newArc.endAngle = interpolate(t);
+     return arc(newArc);
+   };
+  });
+}
+setForeground(context) {
+    return context.append('path')
+    .datum({ endAngle: 0 }) // <- (instead of tau * our percentage)
+    .style('fill', this.props.foregroundColor)
     .attr('d', this.arc());
-	}
-
+  }
+updatePercent(context) {
+  return this.setForeground(context).transition()
+   .duration(this.props.duration)
+   .call(this.arcTween, this.tau * this.props.percentComplete, this.arc());
+}
   render() {
     return (
       <div ref="arc"></div>
