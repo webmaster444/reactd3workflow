@@ -19,57 +19,57 @@ class WorkflowChart extends Component {
     }
 
     constructor(props) {
-      super(props);
-      this.state = {
-        svg: '',
-        width: 940,
-        height: 560,
-        defColor:'#337ab7',
-        priColor:'#f0ad4e',
-        totalItemsCnt:0,
-        depth: 0,
-        defElWidth : 100,
-        defElHeight: 40,
-        linkWidth: 50,        
-        padding: 5,
-        nextX: 0,
-        nextY: 40,
-        itemsData : [],
-        drawedItemsArray: [],
-        defStreamHeight:[],
-        paddingY: 40,
-        junctionOperatorRadius : 20,
-        rhombusRadius: 50
-      }       
+        super(props);
+        this.state = {
+            svg: '',
+            width: 940,
+            height: 560,
+            defColor: '#337ab7',
+            priColor: '#f0ad4e',
+            totalItemsCnt: 0,
+            depth: 0,
+            defElWidth: 100,
+            defElHeight: 40,
+            linkWidth: 50,
+            padding: 5,
+            nextX: 0,
+            nextY: 40,
+            itemsData: [],
+            drawedItemsArray: [],
+            defStreamHeight: [],
+            paddingY: 40,
+            junctionOperatorRadius: 20,
+            rhombusRadius: 50
+        }
     }
 
     componentDidMount() {
-      var data = require('./data/jsondata3.json');      
-      const context = this.setContext();
+        var data = require('./data/jsondata2.json');
+        const context = this.setContext();
 
-      this.drawStreamLayout(context,data[0]);
-      this.state.itemsData.push(data[0].items);                  
-      this.parseJson(this.state.itemsData);                    
-      this.drawElement(context,10, this.state.paddingY, this.state.itemsData[0][1], 1);
-      this.drawLinks(context,this.state.itemsData[0]);
+        this.drawStreamLayout(context, data[0]);
+        this.state.itemsData.push(data[0].items);
+        this.parseJson(this.state.itemsData);
+        this.drawElement(context, 10, this.state.paddingY, this.state.itemsData[0][1], 1);
+        this.drawLinks(context, this.state.itemsData[0]);
     }
 
     componentDidUpdate() {
-        
+
     }
 
     setContext() {
-      return d3.select('#workflow').append('svg')
-          .attr('width', '100%')
-          .attr('height', '100%')
-          .attr('viewBox', '0 0 970 570')
-          .attr('preserveAspectRatio', 'xMinYMin')
-          .append("g")
-          .attr("transform", "translate(30,10)");
+        return d3.select('#workflow').append('svg')
+            .attr('width', '100%')
+            .attr('height', '100%')
+            .attr('viewBox', '0 0 970 570')
+            .attr('preserveAspectRatio', 'xMinYMin')
+            .append("g")
+            .attr("transform", "translate(30,10)");
     }
-    
 
-    drawRect(context,id, x, y, width, height, color, text) {
+
+    drawRect(context, id, x, y, width, height, color, text) {
         var g = context.append('g').attr('id', 'item' + id).attr('class', 'g_wrapper').attr('transform', function() {
             return "translate(" + x + "," + y + ")";
         }).attr('startX', x).attr('startY', y).attr('endX', x + width).attr('endY', y + height);
@@ -84,7 +84,7 @@ class WorkflowChart extends Component {
     }
 
     //draw rounded rectangle
-    drawRoundRect(context,id, x, y, width, height, text, color, rx) {
+    drawRoundRect(context, id, x, y, width, height, text, color, rx) {
         if (rx == '' || rx == undefined) {
             rx = 3;
         }
@@ -103,7 +103,7 @@ class WorkflowChart extends Component {
     }
 
     //draw round square and rotate
-    drawRhombus(context,id, x, y, width, color, rx, text) {
+    drawRhombus(context, id, x, y, width, color, rx, text) {
         let _this = this;
         var g = context.append('g').attr('id', 'item' + id).attr('class', 'g_wrapper').attr('transform', function() {
             return "translate(" + x + "," + y + ")";
@@ -119,7 +119,7 @@ class WorkflowChart extends Component {
         return res;
     }
 
-    drawOrSplitOperator(context,id, x, y, color, rx) {
+    drawOrSplitOperator(context, id, x, y, color, rx) {
         var g = context.append('g').attr('id', 'item' + id).attr('class', 'g_wrapper').attr('transform', function() {
             return "translate(" + x + "," + y + ")";
         }).attr('startX', x).attr('startY', y).attr('endX', x + rx).attr('endY', y + rx);
@@ -145,7 +145,7 @@ class WorkflowChart extends Component {
             .attr('stroke-width', '3px');
     }
 
-    drawJunctionOperator(context,id, x, y, color, rx) {
+    drawJunctionOperator(context, id, x, y, color, rx) {
         var g = context.append('g').attr('id', 'item' + id).attr('class', 'g_wrapper').attr('transform', function() {
             return "translate(" + x + "," + y + ")";
         }).attr('startX', x).attr('startY', y).attr('endX', x + 2 * rx).attr('endY', y + rx);
@@ -171,7 +171,7 @@ class WorkflowChart extends Component {
             .attr('stroke-width', '3px');
     }
 
-    drawConnectorOperator(context,id, x, y, color, rx, text) {
+    drawConnectorOperator(context, id, x, y, color, rx, text) {
         var g = context.append('g').attr('id', 'item' + id).attr('class', 'g_wrapper').attr('transform', function() {
             return "translate(" + x + "," + y + ")";
         }).attr('startX', x).attr('startY', y).attr('endX', x + 2 * rx).attr('endY', y + rx);
@@ -304,13 +304,19 @@ class WorkflowChart extends Component {
     }
 
     parseJson(jsondata) {
-        this.setState({totalItemsCnt:Object.keys(jsondata[0]).length});        
+        this.setState({
+            totalItemsCnt: Object.keys(jsondata[0]).length
+        });
         var connectorsArray = [];
         for (var index in jsondata[0]) {
             connectorsArray.push(Object.keys(jsondata[0][index].connectors).length);
         }
-        this.setState({'depth': d3.max(connectorsArray)});
-        this.setState({'defElWidth' : this.state.width / (this.state.totalItemsCnt - this.state.depth + 1) - this.state.linkWidth});
+        this.setState({
+            'depth': d3.max(connectorsArray)
+        });
+        this.setState({
+            'defElWidth': this.state.width / (this.state.totalItemsCnt - this.state.depth + 1) - this.state.linkWidth
+        });
     }
 
     selectArrow(startX, startY, endX, endY, nodeType) {
@@ -330,105 +336,105 @@ class WorkflowChart extends Component {
             return this.drawArrow3(startX, startY, endX, endY);
         }
     }
-    drawElement(context,startX, startY, data, step) {
-      var nextX, nextY;
+    drawElement(context, startX, startY, data, step) {
+        var nextX, nextY;
         this.state.drawedItemsArray.push(step);
         // step++;        
         switch (data.type) {
             case 'start':
-                this.drawRoundRect(context,data.id, startX, startY, this.state.defElWidth, 40, data.title, this.state.defColor);
+                this.drawRoundRect(context, data.id, startX, startY, this.state.defElWidth, 40, data.title, this.state.defColor);
                 break;
             case 'finish':
-                this.drawRoundRect(context,data.id, startX, startY, this.state.defElWidth, 40, data.title, this.state.priColor);
+                this.drawRoundRect(context, data.id, startX, startY, this.state.defElWidth, 40, data.title, this.state.priColor);
                 break;
             case 'process-simple':
-                this.drawRect(context,data.id, startX, startY, this.state.defElWidth, 40, this.state.defColor, data.title);
+                this.drawRect(context, data.id, startX, startY, this.state.defElWidth, 40, this.state.defColor, data.title);
                 break;
             case 'decision':
-                this.drawRhombus(context,data.id, startX, startY, this.state.rhombusRadius, this.state.defColor, 5, data.title);
+                this.drawRhombus(context, data.id, startX, startY, this.state.rhombusRadius, this.state.defColor, 5, data.title);
                 break;
             case 'connector-start':
-                this.drawConnectorOperator(context,data.id, startX, startY, this.state.defColor, 40, data.title)
+                this.drawConnectorOperator(context, data.id, startX, startY, this.state.defColor, 40, data.title)
                 break;
             case 'connector-end':
-                this.drawConnectorOperator(context,data.id, startX, startY, this.state.priColor, 40, data.title)
+                this.drawConnectorOperator(context, data.id, startX, startY, this.state.priColor, 40, data.title)
                 break;
             case 'or-split':
-                this.drawOrSplitOperator(context,data.id, startX, startY, this.state.defColor, 20);
+                this.drawOrSplitOperator(context, data.id, startX, startY, this.state.defColor, 20);
                 break;
             case 'junction':
-                this.drawJunctionOperator(context,data.id, startX, startY, this.state.defColor, 20);
+                this.drawJunctionOperator(context, data.id, startX, startY, this.state.defColor, 20);
                 break;
             default:
                 break;
         }
-        
-          console.log(data);
-          if (Object.keys(data.connectors).length == 1) {
-              var tmpConnector = data.connectors[1];
-              var nextStep = tmpConnector.linkTo;
-              var nextItemData = this.state.itemsData[0][nextStep];
-              if (data.stream == nextItemData.stream) {
-                  nextX = startX + this.state.defElWidth + this.state.linkWidth + this.state.padding;
-                  nextY = startY;
-              } else {
-                  nextX = startX;
-                  nextY = this.state.defStreamHeight * (nextItemData.stream - 1) + this.state.paddingY;
-              }
 
-              if (this.state.drawedItemsArray.indexOf(nextStep) == -1) {
-                  this.drawElement(context,nextX, nextY, nextItemData, nextStep);
-              }
-          }
+        console.log(data);
+        if (Object.keys(data.connectors).length == 1) {
+            var tmpConnector = data.connectors[1];
+            var nextStep = tmpConnector.linkTo;
+            var nextItemData = this.state.itemsData[0][nextStep];
+            if (data.stream == nextItemData.stream) {
+                nextX = startX + this.state.defElWidth + this.state.linkWidth + this.state.padding;
+                nextY = startY;
+            } else {
+                nextX = startX;
+                nextY = this.state.defStreamHeight * (nextItemData.stream - 1) + this.state.paddingY;
+            }
 
-          if (Object.keys(data.connectors).length == 2) {
-              //1st node
-              var tmpConnector = data.connectors[1];
-              var nextStep = tmpConnector.linkTo;
-              var nextItemData = this.state.itemsData[0][nextStep];
-              if (data.stream == nextItemData.stream) {
-                  nextX = startX + this.state.defElWidth + this.state.linkWidth + this.state.padding;
-                  nextY = startY;
-              } else {
-                  nextX = startX;
-                  nextY = this.state.defStreamHeight * (nextItemData.stream - 1) + this.state.paddingY;
-              }
+            if (this.state.drawedItemsArray.indexOf(nextStep) == -1) {
+                this.drawElement(context, nextX, nextY, nextItemData, nextStep);
+            }
+        }
 
-              if (this.state.drawedItemsArray.indexOf(nextStep) == -1) {
-                  this.drawElement(context,nextX, nextY, nextItemData, nextStep);
-              }
+        if (Object.keys(data.connectors).length == 2) {
+            //1st node
+            var tmpConnector = data.connectors[1];
+            var nextStep = tmpConnector.linkTo;
+            var nextItemData = this.state.itemsData[0][nextStep];
+            if (data.stream == nextItemData.stream) {
+                nextX = startX + this.state.defElWidth + this.state.linkWidth + this.state.padding;
+                nextY = startY;
+            } else {
+                nextX = startX;
+                nextY = this.state.defStreamHeight * (nextItemData.stream - 1) + this.state.paddingY;
+            }
 
-              //2nd node
-              tmpConnector = data.connectors[2];
-              nextStep = tmpConnector.linkTo;
-              nextItemData = this.state.itemsData[0][nextStep];
-              if (data.stream == nextItemData.stream) {
-                  nextX = startX;
-                  nextY = startY + 120;
-              } else {
-                  nextX = startX;
-                  nextY = this.state.defStreamHeight * (nextItemData.stream - 1) + this.state.paddingY;
-              }
+            if (this.state.drawedItemsArray.indexOf(nextStep) == -1) {
+                this.drawElement(context, nextX, nextY, nextItemData, nextStep);
+            }
 
-              if (this.state.drawedItemsArray.indexOf(nextStep) == -1) {
-                  this.drawElement(context,nextX, nextY, nextItemData, nextStep);
-              }
-          }        
+            //2nd node
+            tmpConnector = data.connectors[2];
+            nextStep = tmpConnector.linkTo;
+            nextItemData = this.state.itemsData[0][nextStep];
+            if (data.stream == nextItemData.stream) {
+                nextX = startX;
+                nextY = startY + 120;
+            } else {
+                nextX = startX;
+                nextY = this.state.defStreamHeight * (nextItemData.stream - 1) + this.state.paddingY;
+            }
+
+            if (this.state.drawedItemsArray.indexOf(nextStep) == -1) {
+                this.drawElement(context, nextX, nextY, nextItemData, nextStep);
+            }
+        }
     }
 
-    drawLinks(context,itemsData) {
+    drawLinks(context, itemsData) {
         for (var index in this.state.itemsData[0]) {
             for (var connector in this.state.itemsData[0][index].connectors) {
-                var fromId = this.state.itemsData[0][index].id;                
-                if(this.state.drawedItemsArray.indexOf(fromId) != -1){
-                var startX = d3.select('#item' + fromId).attr('startX');                
-                var startY = d3.select('#item' + fromId).attr('startY');
-                var toId = this.state.itemsData[0][index].connectors[connector].linkTo;
-                var endX = d3.select('#item' + toId).attr('startX');
-                var endY = d3.select('#item' + toId).attr('startY');
-                var nodeType = this.state.itemsData[0][index].type;                
-                context.append('path').attr("d", this.selectArrow(parseInt(startX), parseInt(startY), parseInt(endX), parseInt(endY), nodeType)).attr("fill", "none");
-                }                
+                var fromId = this.state.itemsData[0][index].id;
+                if (this.state.drawedItemsArray.indexOf(fromId) != -1) {
+                    var startX = d3.select('#item' + fromId).attr('startX');
+                    var startY = d3.select('#item' + fromId).attr('startY');
+                    var toId = this.state.itemsData[0][index].connectors[connector].linkTo;
+                    var endX = d3.select('#item' + toId).attr('startX');
+                    var endY = d3.select('#item' + toId).attr('startY');
+                    var nodeType = this.state.itemsData[0][index].type;
+                    context.append('path').attr("d", this.selectArrow(parseInt(startX), parseInt(startY), parseInt(endX), parseInt(endY), nodeType)).attr("fill", "none");
+                }
             }
         }
     }
@@ -475,8 +481,8 @@ class WorkflowChart extends Component {
             });
     }
     render() {
-        return ( <div id = "workflow" > < /div>)
+        return (<div id="workflow"></div>);
+        }
     }
-}
 
 export default WorkflowChart;
