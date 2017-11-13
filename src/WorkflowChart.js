@@ -419,15 +419,16 @@ class WorkflowChart extends Component {
     drawLinks(context,itemsData) {
         for (var index in this.state.itemsData[0]) {
             for (var connector in this.state.itemsData[0][index].connectors) {
-                var fromId = this.state.itemsData[0][index].id;
-                var startX = d3.select('#item' + fromId).attr('startX');
+                var fromId = this.state.itemsData[0][index].id;                
+                if(this.state.drawedItemsArray.indexOf(fromId) != -1){
+                var startX = d3.select('#item' + fromId).attr('startX');                
                 var startY = d3.select('#item' + fromId).attr('startY');
                 var toId = this.state.itemsData[0][index].connectors[connector].linkTo;
                 var endX = d3.select('#item' + toId).attr('startX');
                 var endY = d3.select('#item' + toId).attr('startY');
-                var nodeType = this.state.itemsData[0][index].type;
-                // endY = d3.select('#item'+toId).attr('startY');
+                var nodeType = this.state.itemsData[0][index].type;                
                 context.append('path').attr("d", this.selectArrow(parseInt(startX), parseInt(startY), parseInt(endX), parseInt(endY), nodeType)).attr("fill", "none");
+                }                
             }
         }
     }
