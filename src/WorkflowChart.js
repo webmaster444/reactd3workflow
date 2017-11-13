@@ -45,27 +45,30 @@ class WorkflowChart extends Component {
     }
 
     componentDidMount() {
-      var generalChartData = require('./data/jsondata.json');
-      this.setState({svg : d3.select("#content").append("svg")
-          .attr('width', '100%')
-          .attr('height', '100%')
-          .attr('viewBox', '0 0 970 570')
-          .attr('preserveAspectRatio', 'xMinYMin')
-          .append("g")
-          .attr("transform", "translate(30,10)")});
+      var data = require('./data/jsondata2.json');      
+      const context = this.setContext();
+
+          this.drawStreamLayout(context,data[0]);
+          // var itemsData = data[0].items;
+          // this.parseJson(itemsData);
+          // this.drawElement(10, this.state.paddingY, this.state.itemsData[this.state.currentStep], this.state.currentStep);
+          // this.drawLinks(itemsData);
     }
 
     componentDidUpdate() {
         this.redrawArc();
     }
 
-    redrawArc() {
-        const context = d3.select(`#${this.props.id}`);
-        context.remove();
-        this.drawArc();
+    setContext() {
+      return d3.select('#workflow').append('svg')
+          .attr('width', '100%')
+          .attr('height', '100%')
+          .attr('viewBox', '0 0 970 570')
+          .attr('preserveAspectRatio', 'xMinYMin')
+          .append("g")
+          .attr("transform", "translate(30,10)");
     }
-
-    drawArc() {}
+    
 
     drawRect(id, x, y, width, height, color, text) {
         var g = this.state.svg.append('g').attr('id', 'item' + id).attr('class', 'g_wrapper').attr('transform', function() {
@@ -428,7 +431,8 @@ class WorkflowChart extends Component {
         }
     }
 
-    drawStreamLayout(data) {
+    drawStreamLayout(context, data) {
+        var _this = this;
         var streamsData = data.streams;
         var streamsCnt = Object.keys(streamsData).length;
 
@@ -442,7 +446,7 @@ class WorkflowChart extends Component {
             })
         };
 
-        var g_stream_wrapper = this.state.svg.selectAll(".stream")
+        var g_stream_wrapper = context.selectAll(".stream")
             .data(streamsArr)
             .enter().append('g').attr('class', 'stream_wrapper');
 
@@ -451,14 +455,14 @@ class WorkflowChart extends Component {
             .attr("class", "stream")
             .attr("x", 0)
             .attr("y", function(d, i) {
-                return this.state.height / streamsCnt * i
+                return _this.state.height / streamsCnt * i
             }).attr('rx', 6).attr('width', this.state.width).attr('height', function(d, i) {
-                return this.state.height / streamsCnt;
+                return _this.state.height / streamsCnt;
             }).attr('fill', 'none').attr('stroke', '#ddd').attr('stroke-width', '2px');
 
         g_stream_wrapper.append('text')
             .attr('x', function(d, i) {
-                return -this.state.height / streamsCnt * i
+                return -(_this.state.height / streamsCnt * i)
             })
             .attr('y', 0)
             .style("text-anchor", "end")
@@ -469,9 +473,7 @@ class WorkflowChart extends Component {
             });
     }
     render() {
-        return ( <
-            div ref = "workflow" > < /div>
-        )
+        return ( <div id = "workflow" > < /div>)
     }
 }
 
