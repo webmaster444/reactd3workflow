@@ -44,15 +44,14 @@ class WorkflowChart extends Component {
     }
 
     componentDidMount() {
-      var data = require('./data/jsondata2.json');      
+      var data = require('./data/jsondata3.json');      
       const context = this.setContext();
 
-          this.drawStreamLayout(context,data[0]);
-          this.state.itemsData.push(data[0].items);                  
-          this.parseJson(this.state.itemsData);          
-          // console.log(data[0].items);
-          this.drawElement(context,10, this.state.paddingY, this.state.itemsData[0][1], 1);
-          // this.drawLinks(context,itemsData);
+      this.drawStreamLayout(context,data[0]);
+      this.state.itemsData.push(data[0].items);                  
+      this.parseJson(this.state.itemsData);                    
+      this.drawElement(context,10, this.state.paddingY, this.state.itemsData[0][1], 1);
+      this.drawLinks(context,this.state.itemsData[0]);
     }
 
     componentDidUpdate() {
@@ -105,17 +104,18 @@ class WorkflowChart extends Component {
 
     //draw round square and rotate
     drawRhombus(context,id, x, y, width, color, rx, text) {
+        let _this = this;
         var g = context.append('g').attr('id', 'item' + id).attr('class', 'g_wrapper').attr('transform', function() {
             return "translate(" + x + "," + y + ")";
-        }).attr('startX', x).attr('startY', y).attr('endX', x + 2 * this.state.width).attr('endY', y + this.state.width);
+        }).attr('startX', x).attr('startY', y).attr('endX', x + 2 * width).attr('endY', y + width);
         var res = g.append("polygon")
             .attr('points', function() {
-                return 0 + ',' + this.state.defElHeight / 2 + ' ' + this.state.width + ',' + (-this.state.width + this.state.defElHeight / 2) + ' ' + (2 * this.state.width) + ',' + this.state.defElHeight / 2 + ' ' + this.state.width + ',' + (this.state.width + this.state.defElHeight / 2)
+                return 0 + ',' + _this.state.defElHeight / 2 + ' ' + width + ',' + (-width + _this.state.defElHeight / 2) + ' ' + (2 * width) + ',' + _this.state.defElHeight / 2 + ' ' + width + ',' + (width + _this.state.defElHeight / 2)
             })
             .attr('stroke', color)
             .attr('fill', 'white');
 
-        res += g.append("text").text(text).attr('x', this.state.width).attr('y', this.state.defElHeight / 2).attr('text-anchor', 'middle').attr('dy', '.1em').call(this.wrap, this.state.width);
+        res += g.append("text").text(text).attr('x', width).attr('y', this.state.defElHeight / 2).attr('text-anchor', 'middle').attr('dy', '.1em').call(this.wrap, width);
         return res;
     }
 
@@ -189,7 +189,7 @@ class WorkflowChart extends Component {
         var ahwidth = 5;
         switch (nodeType) {
             case 'start':
-                x += this.state.this.state.defElWidth;
+                x += this.state.defElWidth;
                 y += this.state.defElHeight / 2;
                 break;
             case 'finish':
@@ -362,69 +362,70 @@ class WorkflowChart extends Component {
             default:
                 break;
         }
+        
+          console.log(data);
+          if (Object.keys(data.connectors).length == 1) {
+              var tmpConnector = data.connectors[1];
+              var nextStep = tmpConnector.linkTo;
+              var nextItemData = this.state.itemsData[0][nextStep];
+              if (data.stream == nextItemData.stream) {
+                  nextX = startX + this.state.defElWidth + this.state.linkWidth + this.state.padding;
+                  nextY = startY;
+              } else {
+                  nextX = startX;
+                  nextY = this.state.defStreamHeight * (nextItemData.stream - 1) + this.state.paddingY;
+              }
 
-        // if (Object.keys(data.connectors).length == 1) {
-        //     var tmpConnector = data.connectors[1];
-        //     var nextStep = tmpConnector.linkTo;
-        //     var nextItemData = this.state.itemsData[nextStep];
-        //     if (data.stream == nextItemData.stream) {
-        //         nextX = startX + this.state.defElWidth + this.state.linkWidth + this.state.padding;
-        //         nextY = startY;
-        //     } else {
-        //         nextX = startX;
-        //         nextY = this.state.defStreamHeight * (nextItemData.stream - 1) + this.state.paddingY;
-        //     }
+              if (this.state.drawedItemsArray.indexOf(nextStep) == -1) {
+                  this.drawElement(context,nextX, nextY, nextItemData, nextStep);
+              }
+          }
 
-        //     if (this.state.drawedItemsArray.indexOf(nextStep) == -1) {
-        //         this.drawElement(context,nextX, nextY, nextItemData, nextStep);
-        //     }
-        // }
+          if (Object.keys(data.connectors).length == 2) {
+              //1st node
+              var tmpConnector = data.connectors[1];
+              var nextStep = tmpConnector.linkTo;
+              var nextItemData = this.state.itemsData[0][nextStep];
+              if (data.stream == nextItemData.stream) {
+                  nextX = startX + this.state.defElWidth + this.state.linkWidth + this.state.padding;
+                  nextY = startY;
+              } else {
+                  nextX = startX;
+                  nextY = this.state.defStreamHeight * (nextItemData.stream - 1) + this.state.paddingY;
+              }
 
-        // if (Object.keys(data.connectors).length == 2) {
-        //     //1st node
-        //     var tmpConnector = data.connectors[1];
-        //     var nextStep = tmpConnector.linkTo;
-        //     var nextItemData = this.state.itemsData[nextStep];
-        //     if (data.stream == nextItemData.stream) {
-        //         nextX = startX + this.state.defElWidth + this.state.linkWidth + this.state.padding;
-        //         nextY = startY;
-        //     } else {
-        //         nextX = startX;
-        //         nextY = this.state.defStreamHeight * (nextItemData.stream - 1) + this.state.paddingY;
-        //     }
+              if (this.state.drawedItemsArray.indexOf(nextStep) == -1) {
+                  this.drawElement(context,nextX, nextY, nextItemData, nextStep);
+              }
 
-        //     if (this.state.drawedItemsArray.indexOf(nextStep) == -1) {
-        //         this.drawElement(nextX, nextY, nextItemData, nextStep);
-        //     }
+              //2nd node
+              tmpConnector = data.connectors[2];
+              nextStep = tmpConnector.linkTo;
+              nextItemData = this.state.itemsData[0][nextStep];
+              if (data.stream == nextItemData.stream) {
+                  nextX = startX;
+                  nextY = startY + 120;
+              } else {
+                  nextX = startX;
+                  nextY = this.state.defStreamHeight * (nextItemData.stream - 1) + this.state.paddingY;
+              }
 
-        //     //2nd node
-        //     tmpConnector = data.connectors[2];
-        //     nextStep = tmpConnector.linkTo;
-        //     nextItemData = this.state.itemsData[nextStep];
-        //     if (data.stream == nextItemData.stream) {
-        //         nextX = startX;
-        //         nextY = startY + 120;
-        //     } else {
-        //         nextX = startX;
-        //         nextY = this.state.defStreamHeight * (nextItemData.stream - 1) + this.state.paddingY;
-        //     }
-
-        //     if (this.state.drawedItemsArray.indexOf(nextStep) == -1) {
-        //         this.drawElement(nextX, nextY, nextItemData, nextStep);
-        //     }
-        // }
+              if (this.state.drawedItemsArray.indexOf(nextStep) == -1) {
+                  this.drawElement(context,nextX, nextY, nextItemData, nextStep);
+              }
+          }        
     }
 
     drawLinks(context,itemsData) {
-        for (var index in this.state.itemsData) {
-            for (var connector in this.state.itemsData[index].connectors) {
-                var fromId = this.state.itemsData[index].id;
+        for (var index in this.state.itemsData[0]) {
+            for (var connector in this.state.itemsData[0][index].connectors) {
+                var fromId = this.state.itemsData[0][index].id;
                 var startX = d3.select('#item' + fromId).attr('startX');
                 var startY = d3.select('#item' + fromId).attr('startY');
-                var toId = this.state.itemsData[index].connectors[connector].linkTo;
+                var toId = this.state.itemsData[0][index].connectors[connector].linkTo;
                 var endX = d3.select('#item' + toId).attr('startX');
                 var endY = d3.select('#item' + toId).attr('startY');
-                var nodeType = this.state.itemsData[index].type;
+                var nodeType = this.state.itemsData[0][index].type;
                 // endY = d3.select('#item'+toId).attr('startY');
                 context.append('path').attr("d", this.selectArrow(parseInt(startX), parseInt(startY), parseInt(endX), parseInt(endY), nodeType)).attr("fill", "none");
             }
