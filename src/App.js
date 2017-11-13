@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import ProgressArc from './ProgressArc';
+import WorkflowChart from './WorkflowChart';
 import './App.css';
 
 class App extends Component {  
@@ -15,19 +15,8 @@ class App extends Component {
   }
   render() {
     return (
-            <div>
-        <a onClick={this.togglePercent}>Toggle Arc</a>
-      <ProgressArc
-        height={300}
-        width={300}
-        innerRadius={100}
-        outerRadius={110}
-        duration={2000}
-        id="d3-arc"
-        backgroundColor="#e6e6e6"
-        foregroundColor="#00ff00"
-        percentComplete={this.state.percentComplete}
-      />
+      <div>        
+        <WorkflowChart id="d3-workflow"/>
        </div>
     );
   }

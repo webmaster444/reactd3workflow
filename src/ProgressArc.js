@@ -17,14 +17,15 @@ class ProgressArc extends Component {
   }
 
   componentDidMount() {
+    var generalChartData = require('./data/jsondata.json');    
 	  this.drawArc();
 	}
 
-	  componentDidUpdate() {
+	componentDidUpdate() {
     this.redrawArc();
   }
 
- redrawArc() {
+  redrawArc() {
     const context = d3.select(`#${this.props.id}`);
     context.remove();
     this.drawArc();
