@@ -3,6 +3,8 @@ import React, {
 } from 'react';
 import * as d3 from "d3";
 
+import "./WorkflowChart.css";
+
 class WorkflowChart extends Component {
 
     displayName: 'WorkflowChart';
@@ -43,10 +45,9 @@ class WorkflowChart extends Component {
         }
     }
 
-    componentDidMount() {
-        var data = require('./data/jsondata2.json');
+    componentDidMount() {        
+        var data = this.props.data;        
         const context = this.setContext();
-
         this.drawStreamLayout(context, data[0]);
         this.state.itemsData.push(data[0].items);
         this.parseJson(this.state.itemsData);
@@ -54,8 +55,18 @@ class WorkflowChart extends Component {
         this.drawLinks(context, this.state.itemsData[0]);
     }
 
-    componentDidUpdate() {
-
+    componentDidUpdate(prevProps, prevState) {
+            // only update chart if the data has changed
+            console.log('Received new data!');
+            if ([prevProps.data][0].items !== [this.props.data][0].items) {                            
+                var data = this.props.data;
+                const context = this.setContext();
+                this.state.itemsData.push(data[0].items);
+                this.drawStreamLayout(context, data[0]);            
+                this.parseJson(this.state.itemsData);
+                this.drawElement(context, 10, this.state.paddingY, this.state.itemsData[0][1], 1);
+                this.drawLinks(context, this.state.itemsData[0]);
+            };
     }
 
     setContext() {
@@ -72,7 +83,9 @@ class WorkflowChart extends Component {
     drawRect(context, id, x, y, width, height, color, text) {
         var g = context.append('g').attr('id', 'item' + id).attr('class', 'g_wrapper').attr('transform', function() {
             return "translate(" + x + "," + y + ")";
-        }).attr('startX', x).attr('startY', y).attr('endX', x + width).attr('endY', y + height);
+        }).attr('startX', x).attr('startY', y).attr('endX', x + width).attr('endY', y + height).on('click',function(d){
+                console.log(id);
+            });
         var res = g.append("rect")
             .attr("x", 0)
             .attr("y", 0)
@@ -90,7 +103,9 @@ class WorkflowChart extends Component {
         }
         var g = context.append('g').attr('id', 'item' + id).attr('class', 'g_wrapper').attr('transform', function() {
             return "translate(" + x + "," + y + ")";
-        }).attr('startX', x).attr('startY', y).attr('endX', x + width).attr('endY', y + height);
+        }).attr('startX', x).attr('startY', y).attr('endX', x + width).attr('endY', y + height).on('click',function(d){
+                console.log(id);
+            });
         var res = g.append("rect")
             .attr('ry', rx)
             .attr("x", 0)
@@ -107,7 +122,9 @@ class WorkflowChart extends Component {
         let _this = this;
         var g = context.append('g').attr('id', 'item' + id).attr('class', 'g_wrapper').attr('transform', function() {
             return "translate(" + x + "," + y + ")";
-        }).attr('startX', x).attr('startY', y).attr('endX', x + 2 * width).attr('endY', y + width);
+        }).attr('startX', x).attr('startY', y).attr('endX', x + 2 * width).attr('endY', y + width).on('click',function(d){
+                console.log(id);
+            });
         var res = g.append("polygon")
             .attr('points', function() {
                 return 0 + ',' + _this.state.defElHeight / 2 + ' ' + width + ',' + (-width + _this.state.defElHeight / 2) + ' ' + (2 * width) + ',' + _this.state.defElHeight / 2 + ' ' + width + ',' + (width + _this.state.defElHeight / 2)
@@ -120,15 +137,17 @@ class WorkflowChart extends Component {
     }
 
     drawOrSplitOperator(context, id, x, y, color, rx) {
-        var g = context.append('g').attr('id', 'item' + id).attr('class', 'g_wrapper').attr('transform', function() {
+        var g_w = context.append('g').attr('id', 'item' + id).attr('class', 'g_wrapper').attr('transform', function() {
             return "translate(" + x + "," + y + ")";
-        }).attr('startX', x).attr('startY', y).attr('endX', x + rx).attr('endY', y + rx);
-        g.append("circle")
+        }).attr('startX', x).attr('startY', y).attr('endX', x + rx).attr('endY', y + rx).on('click',function(d){
+                console.log(id);
+            });
+        g_w.append("circle")
             .attr('r', rx)
             .attr("cx", rx)
             .attr("cy", rx)
             .attr('stroke', color);
-        g.append('line')
+        g_w.append('line')
             .attr('x1', 0)
             .attr('y1', rx)
             .attr('x2', (2 * rx))
@@ -136,7 +155,7 @@ class WorkflowChart extends Component {
             .attr('stroke', this.state.defColor)
             .attr('stroke-width', '3px');
 
-        g.append('line')
+        g_w.append('line')
             .attr('x1', rx)
             .attr('y1', 0)
             .attr('x2', rx)
@@ -148,7 +167,9 @@ class WorkflowChart extends Component {
     drawJunctionOperator(context, id, x, y, color, rx) {
         var g = context.append('g').attr('id', 'item' + id).attr('class', 'g_wrapper').attr('transform', function() {
             return "translate(" + x + "," + y + ")";
-        }).attr('startX', x).attr('startY', y).attr('endX', x + 2 * rx).attr('endY', y + rx);
+        }).attr('startX', x).attr('startY', y).attr('endX', x + 2 * rx).attr('endY', y + rx).on('click',function(d){
+                console.log(id);
+            });
         g.append("circle")
             .attr('r', rx)
             .attr("cx", rx)
@@ -174,7 +195,9 @@ class WorkflowChart extends Component {
     drawConnectorOperator(context, id, x, y, color, rx, text) {
         var g = context.append('g').attr('id', 'item' + id).attr('class', 'g_wrapper').attr('transform', function() {
             return "translate(" + x + "," + y + ")";
-        }).attr('startX', x).attr('startY', y).attr('endX', x + 2 * rx).attr('endY', y + rx);
+        }).attr('startX', x).attr('startY', y).attr('endX', x + 2 * rx).attr('endY', y + rx).on('click',function(d){
+                console.log(id);
+            });
         g.append("circle")
             .attr('r', rx)
             .attr("cx", rx)
@@ -368,8 +391,7 @@ class WorkflowChart extends Component {
             default:
                 break;
         }
-
-        console.log(data);
+        
         if (Object.keys(data.connectors).length == 1) {
             var tmpConnector = data.connectors[1];
             var nextStep = tmpConnector.linkTo;
@@ -474,8 +496,8 @@ class WorkflowChart extends Component {
             })
             .attr('y', 0)
             .style("text-anchor", "end")
-            .attr("dx", "-3.5em")
-            .attr("dy", "-.55em")
+            .attr("dx", "-9.5em")
+            .attr("dy", "-1.55em")
             .attr("transform", "rotate(-90)").text(function(d) {
                 return d.title
             });
