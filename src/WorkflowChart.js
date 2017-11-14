@@ -86,19 +86,19 @@ class WorkflowChart extends Component {
         }).attr('startX', x).attr('startY', y).attr('endX', x + width).attr('endY', y + height).on('click',function(d){
                 console.log(id);
             });
-        var res = g.append("rect")
+        g.append("rect")
             .attr("x", 0)
             .attr("y", 0)
             .attr("width", width)
             .attr("height", height)
             .attr('stroke', color);
 
-        res += g.append("text").text(text).attr('x', width / 2).attr('y', height / 2).attr('text-anchor', 'middle').attr('dy', '.1em').call(this.wrap, width);
+        g.append("text").text(text).attr('x', width / 2).attr('y', height / 2).attr('text-anchor', 'middle').attr('dy', '.1em').call(this.wrap, width);
     }
 
     //draw rounded rectangle
     drawRoundRect(context, id, x, y, width, height, text, color, rx) {
-        if (rx == '' || rx == undefined) {
+        if (rx === '' || rx === undefined) {
             rx = 3;
         }
         var g = context.append('g').attr('id', 'item' + id).attr('class', 'g_wrapper').attr('transform', function() {
@@ -106,15 +106,14 @@ class WorkflowChart extends Component {
         }).attr('startX', x).attr('startY', y).attr('endX', x + width).attr('endY', y + height).on('click',function(d){
                 console.log(id);
             });
-        var res = g.append("rect")
+        g.append("rect")
             .attr('ry', rx)
             .attr("x", 0)
             .attr("y", 0)
             .attr("width", width)
             .attr("height", height)
             .attr('stroke', color);
-        res += g.append("text").text(text).attr('x', width / 2).attr('y', height / 2).attr('text-anchor', 'middle').attr('dy', '.1em').call(this.wrap, width);
-
+        g.append("text").text(text).attr('x', width / 2).attr('y', height / 2).attr('text-anchor', 'middle').attr('dy', '.1em').call(this.wrap, width);
     }
 
     //draw round square and rotate
@@ -125,15 +124,14 @@ class WorkflowChart extends Component {
         }).attr('startX', x).attr('startY', y).attr('endX', x + 2 * width).attr('endY', y + width).on('click',function(d){
                 console.log(id);
             });
-        var res = g.append("polygon")
+        g.append("polygon")
             .attr('points', function() {
                 return 0 + ',' + _this.state.defElHeight / 2 + ' ' + width + ',' + (-width + _this.state.defElHeight / 2) + ' ' + (2 * width) + ',' + _this.state.defElHeight / 2 + ' ' + width + ',' + (width + _this.state.defElHeight / 2)
             })
             .attr('stroke', color)
             .attr('fill', 'white');
 
-        res += g.append("text").text(text).attr('x', width).attr('y', this.state.defElHeight / 2).attr('text-anchor', 'middle').attr('dy', '.1em').call(this.wrap, width);
-        return res;
+        g.append("text").text(text).attr('x', width).attr('y', this.state.defElHeight / 2).attr('text-anchor', 'middle').attr('dy', '.1em').call(this.wrap, width);        
     }
 
     drawOrSplitOperator(context, id, x, y, color, rx) {
@@ -235,6 +233,10 @@ class WorkflowChart extends Component {
                 x += 2 * this.state.junctionOperatorRadius;
                 y += this.state.defElHeight / 2;
                 break;
+            default:
+                x += this.state.defElWidth;
+                y += this.state.defElHeight / 2;
+                break;
         }
 
         return "M" + x + "," + y +
@@ -262,9 +264,7 @@ class WorkflowChart extends Component {
             "h" + (5);
     }
     //Arrow - Decision to Vertical Element
-    drawArrow2(startX, startY, endX, endY, type) {
-
-        var qVH = 3;
+    drawArrow2(startX, startY, endX, endY, type) {        
         startX += 50;
         if (type == 'decision') {
             startY += 75;
@@ -287,8 +287,7 @@ class WorkflowChart extends Component {
     }
 
     //Arrow - bottom to top left
-    drawArrow3(startX, startY, endX, endY) {
-        var qVH = 3;
+    drawArrow3(startX, startY, endX, endY) {        
         endX += this.state.junctionOperatorRadius;
         startY += this.state.defElHeight / 2;
         endY += 2 * this.state.junctionOperatorRadius + 8;
