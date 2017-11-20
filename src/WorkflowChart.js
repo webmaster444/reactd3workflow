@@ -198,10 +198,10 @@ class WorkflowChart extends Component {
             });
         g.append("circle")
             .attr('r', rx)
-            .attr("cx", rx)
+            .attr("cx", rx+10)
             .attr("cy", rx / 2)
             .attr('stroke', color);
-        g.append("text").text(text).attr('x', rx).attr('y', rx / 2).attr('text-anchor', 'middle').attr('dy', '.1em').call(this.wrap, 2 * rx);
+        g.append("text").text(text).attr('x', rx+10).attr('y', rx / 2).attr('text-anchor', 'middle').attr('dy', '.1em').call(this.wrap, 2 * rx);
     }
 
     //Default left-right arrow
