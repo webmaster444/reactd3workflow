@@ -455,6 +455,7 @@ class WorkflowChart extends Component {
                     var endY = d3.select('#item' + toId).attr('startY');
                     var nodeType = this.state.itemsData[0][index].type;
                     context.append('path').attr("d", this.selectArrow(parseInt(startX), parseInt(startY), parseInt(endX), parseInt(endY), nodeType)).attr("fill", "none");
+                    svg.append('text').attr('x',parseInt(endX)).attr('y',endY).attr('text-anchor','end').text(itemsData[index].connectors[connector].title).attr('font-size','10px');
                 }
             }
         }
