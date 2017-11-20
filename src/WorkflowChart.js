@@ -79,7 +79,34 @@ class WorkflowChart extends Component {
             .attr("transform", "translate(30,10)");
     }
 
+     appendLinkTitle(context, text,startX,startY,endX,endY){    
+        var poX,poY;
+        poY  = endY;
+        poX  = endX - 25;
+        var textWidth = 50;
+        var textAnchor = 'middle';
+        if (startY == endY) {
+            if (endX < startX) {
+                poY = parseInt(endY);
+                poX = startX - 50;
+            } else {
+                poY = parseInt(endY) + 30;
+            }
+        }
 
+        if (startX == endX) {
+            poY = endY - (endY-startY)/2 + this.state.rhombusRadius;
+            poX = parseInt(endX)+50;
+            textWidth = 150;
+            textAnchor = 'end';
+        }
+
+        if ((endX < startX) && (endY < startY)) {
+            poY = endY - (endY-startY)/2;
+        }
+
+        context.append('text').attr('x',poX).attr('dx','-5px').attr('dy','-3px').attr('y',poY).style('text-anchor',textAnchor).text(text).style('font-size','8px').call(this.wrap,textWidth);
+    }
     drawRect(context, id, x, y, width, height, color, text) {
         var g = context.append('g').attr('id', 'item' + id).attr('class', 'g_wrapper').attr('transform', function() {
             return "translate(" + x + "," + y + ")";
@@ -459,8 +486,8 @@ class WorkflowChart extends Component {
                     var endY = d3.select('#item' + toId).attr('startY');
                     var nodeType = this.state.itemsData[0][index].type;
                     var nextType = this.state.itemsData[0][toId].type;
-                    context.append('path').attr("d", this.selectArrow(parseInt(startX), parseInt(startY), parseInt(endX), parseInt(endY), nodeType,nextType)).attr("fill", "none");
-                    context.append('text').attr('x',parseInt(endX)).attr('y',endY).attr('text-anchor','end').text(itemsData[index].connectors[connector].title).style('font-size','8px');
+                    context.append('path').attr("d", this.selectArrow(parseInt(startX), parseInt(startY), parseInt(endX), parseInt(endY), nodeType,nextType)).attr("fill", "none");                    
+                    this.appendLinkTitle(context,this.state.itemsData[0][index].connectors[connector].title,startX,startY,endX,endY);  
                 }
             }
         }
