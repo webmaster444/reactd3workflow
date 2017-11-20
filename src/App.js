@@ -6,7 +6,7 @@ class App extends Component {
   constructor(props) {
      super(props);     
      this.state = {
-          content: require('./data/jsondata.json')
+          content: require('./data/jsondata2.json')
       }
    }
   

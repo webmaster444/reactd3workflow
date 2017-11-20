@@ -264,26 +264,30 @@ class WorkflowChart extends Component {
             "h" + (5);
     }
     //Arrow - Decision to Vertical Element
-    drawArrow2(startX, startY, endX, endY, type) {        
+    drawArrow2(startX, startY, endX, endY, type,nextType) {        
+        var diffElHeight = 40;
         startX += 50;
         if (type == 'decision') {
-            startY += 75;
-            return "M" + startX + "," + startY +
-                "v" + (endY - startY - this.state.defElHeight / 2) +
-                "h" + 5 +
-                "L" + (startX) + ',' + (endY - this.state.defElHeight / 2 + 5) +
-                "L" + (startX - 5) + ',' + (endY - this.state.defElHeight / 2) +
-                "h" + (5);
-        } else {
-            startY += 50;
-            return "M" + startX + "," + startY +
-                "v" + (endY - startY - this.state.defElHeight / 2 - 20) +
-                "h" + 5 +
-                "L" + (startX) + ',' + (endY - this.state.defElHeight / 2 + 5 - 20) +
-                "L" + (startX - 5) + ',' + (endY - this.state.defElHeight / 2 - 20) +
-                "h" + (5);
+            startY += 70;        
+        } else if(type=="process-simple" || type=='start' || type=="finish"){
+            startY += 40;
+        }else if(type=='connector-start'){
+
         }
 
+        if(nextType == 'decision'){
+            diffElHeight = 70;           
+        }else if(nextType=='process-simple' || nextType=='start' || nextType=="finish"){
+            diffElHeight = 10;
+        }else if(nextType=='connector-start'||nextType=="connector-end"){
+            diffElHeight = 50;
+        }
+        return "M" + startX + "," + startY +
+            "v" + (endY - startY - diffElHeight / 2 ) +
+            "h" + 5 +
+            "L" + (startX) + ',' + (endY - diffElHeight / 2 + 5) +
+            "L" + (startX - 5) + ',' + (endY - diffElHeight / 2) +
+            "h" + (5);
     }
 
     //Arrow - bottom to top left
@@ -341,7 +345,7 @@ class WorkflowChart extends Component {
         });
     }
 
-    selectArrow(startX, startY, endX, endY, nodeType) {
+    selectArrow(startX, startY, endX, endY, nodeType,nextType) {
         if (startY == endY) {
             if (endX < startX) {
                 return this.drawArrow4(startX, startY, endX, endY);
@@ -351,7 +355,7 @@ class WorkflowChart extends Component {
         }
 
         if (startX == endX) {
-            return this.drawArrow2(startX, startY, endX, endY, nodeType);
+            return this.drawArrow2(startX, startY, endX, endY, nodeType,nextType);
         }
 
         if ((endX < startX) && (endY < startY)) {
@@ -454,8 +458,9 @@ class WorkflowChart extends Component {
                     var endX = d3.select('#item' + toId).attr('startX');
                     var endY = d3.select('#item' + toId).attr('startY');
                     var nodeType = this.state.itemsData[0][index].type;
-                    context.append('path').attr("d", this.selectArrow(parseInt(startX), parseInt(startY), parseInt(endX), parseInt(endY), nodeType)).attr("fill", "none");
-                    svg.append('text').attr('x',parseInt(endX)).attr('y',endY).attr('text-anchor','end').text(itemsData[index].connectors[connector].title).attr('font-size','10px');
+                    var nextType = this.state.itemsData[0][toId].type;
+                    context.append('path').attr("d", this.selectArrow(parseInt(startX), parseInt(startY), parseInt(endX), parseInt(endY), nodeType,nextType)).attr("fill", "none");
+                    context.append('text').attr('x',parseInt(endX)).attr('y',endY).attr('text-anchor','end').text(itemsData[index].connectors[connector].title).style('font-size','8px');
                 }
             }
         }
