@@ -528,8 +528,8 @@ class WorkflowChart extends Component {
             })
             .attr('y', 0)
             .style("text-anchor", "end")
-            .attr("dx", "-9.5em")
-            .attr("dy", "-1.55em")
+            .attr("dx", "-3.5em")
+            .attr("dy", "-.55em")
             .attr("transform", "rotate(-90)").text(function(d) {
                 return d.title
             });
